@@ -1,1 +1,12 @@
-# JetUMLPython
+# JetUML (Python)
+
+Editor de diagramas UML (Class, Sequence, State, Object, Use Case) feito para o trabalho de EXA871.
+
+## Executar
+    py -m jetuml_py                                  # abre o editor (Python 3.10+, Tkinter incluído no instalador do Windows)
+    pip install -r requirements.txt                  # opcional: PNG/JPEG e copiar imagem
+
+## Testes
+    py -m unittest discover -s tests -t .            # os testes de interface exigem display e são ignorados sem ele
+
+Documentação: `docs/PLANO.md` (arquitetura, padrões, formato JSON) e `docs/REQUISITOS.md` (requisitos e status).

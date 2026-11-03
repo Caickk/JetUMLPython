@@ -1,0 +1,3 @@
+# Opcional: necessário só para exportar PNG/JPEG/GIF/BMP/TIFF/WebP e para copiar a imagem do diagrama.
+# SVG e todo o resto funcionam sem ele.
+Pillow>=10.1
