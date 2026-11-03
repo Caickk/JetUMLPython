@@ -162,9 +162,9 @@ class App:
         bind(("<Control-q>", "<Control-Q>"), self.exit)
         bind(("<Control-z>", "<Control-Z>"), self.undo)
         bind(("<Control-y>", "<Control-Y>"), self.redo)
-        bind(("<Control-equal>", "<Control-plus>"), self.zoom_in)
-        bind(("<Control-minus>",), self.zoom_out)
-        bind(("<Control-Key-0>",), self.reset_zoom)
+        bind(("<Control-equal>", "<Control-plus>", "<Control-KP_Add>"), self.zoom_in)
+        bind(("<Control-minus>", "<Control-KP_Subtract>"), self.zoom_out)
+        bind(("<Control-Key-0>", "<Control-KP_0>"), self.reset_zoom)
 
     # ----------------------------------------------------------------- estado
     @property

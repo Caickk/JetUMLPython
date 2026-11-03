@@ -87,6 +87,7 @@ class InteractionController:
     # ------------------------------------------------------------------ gestos
     def press(self, x: float, y: float, ctrl: bool = False, shift: bool = False) -> None:
         self.cancel()
+        self.selection.prune(self.diagram)   # elementos apagados/desfeitos desde o último gesto
         self._geometry()
         p = Point(x, y)
         action = self.tool.action

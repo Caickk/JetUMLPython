@@ -1,0 +1,20 @@
+[build-system]
+requires = ["setuptools>=61"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "jetuml-py"
+version = "1.0.0"
+description = "Editor de diagramas UML (Class, Sequence, State, Object, Use Case) em Python/Tkinter"
+readme = "README.md"
+requires-python = ">=3.10"
+dependencies = []
+
+[project.optional-dependencies]
+image = ["Pillow>=10.1"]       # exportar PNG/JPEG e copiar a imagem do diagrama
+
+[project.gui-scripts]
+jetuml = "jetuml_py.ui.app:main"
+
+[tool.setuptools.packages.find]
+include = ["jetuml_py*"]

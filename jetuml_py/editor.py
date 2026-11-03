@@ -29,6 +29,12 @@ class DiagramEditor:
         self.notifier = notifier or NotificationService()
         self.undo_manager = UndoManager()
 
+    def _alive(self, nodes=(), edges=()):
+        """Só os elementos que ainda pertencem ao diagrama (uma seleção pode ter ficado obsoleta após um desfazer)."""
+        live_nodes = {id(n) for n in self.diagram.all_nodes()}
+        live_edges = {id(e) for e in self.diagram.edges}
+        return ([n for n in nodes if id(n) in live_nodes], [e for e in edges if id(e) in live_edges])
+
     def _reject(self, result):
         if not result.silent:
             self.notifier.error(result.message)
@@ -49,6 +55,8 @@ class DiagramEditor:
 
     def attach(self, node, package):
         """Shift + soltar sobre o pacote (RF15)."""
+        if self._alive([node, package])[0] != [node, package]:
+            return None
         if package.TYPE != "Package" or node.TYPE not in package.ACCEPTS:
             return self._reject(reject(f"A {package.TYPE} cannot contain a {node.TYPE}"))
         if node is package or any(d is package for d in node.descendants()):
@@ -61,13 +69,15 @@ class DiagramEditor:
         return node
 
     def detach(self, node):
+        if not self._alive([node])[0]:
+            return None
         if node.parent is None or node.parent.TYPE != "Package":
             return self._reject(reject(f"A {node.TYPE} cannot be detached from its parent"))
         self.undo_manager.execute(ReparentCommand(self.diagram, node, None))
         return node
 
     def delete(self, nodes=(), edges=()) -> bool:
-        nodes = [n for n in nodes if n.TYPE != "Point"]
+        nodes, edges = self._alive([n for n in nodes if n.TYPE != "Point"], edges)
         if not nodes and not edges:
             return False
         nodes = self._expand_sequence_deletion(nodes, edges)
@@ -83,7 +93,9 @@ class DiagramEditor:
         queue = []
         for n in nodes:
             queue += [n] if n.TYPE == "Call" else list(n.children)
-        queue += [e.end for e in edges if e.kind == "Call" and e.end.TYPE == "Call"]
+        for e in edges:  # apagar uma chamada apaga o que ela criou: a caixa chamada ou as caixas da linha construída
+            if e.kind == "Call":
+                queue += [e.end] if e.end.TYPE == "Call" else list(e.end.children)
         result, seen = list(nodes), {n.id for n in nodes}
         while queue:
             box = queue.pop()
@@ -99,7 +111,7 @@ class DiagramEditor:
         return result
 
     def move(self, nodes, dx: int, dy: int) -> bool:
-        nodes = [n for n in nodes if n.TYPE not in LAYOUT_OWNED and n.TYPE != "Point"]
+        nodes = [n for n in self._alive(nodes)[0] if n.TYPE not in LAYOUT_OWNED and n.TYPE != "Point"]
         if nodes and (dx or dy):
             self.undo_manager.execute(MoveCommand(self.diagram, nodes, dx, dy))
             return True

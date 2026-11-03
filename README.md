@@ -10,3 +10,7 @@ Editor de diagramas UML (Class, Sequence, State, Object, Use Case) feito para o 
     py -m unittest discover -s tests -t .            # os testes de interface exigem display e são ignorados sem ele
 
 Documentação: `docs/PLANO.md` (arquitetura, padrões, formato JSON) e `docs/REQUISITOS.md` (requisitos e status).
+
+## Instalar como programa / gerar .exe
+    pip install .                 # cria o comando `jetuml` (adicione ".[image]" para PNG/JPEG)
+    build_windows.bat             # gera dist\JetUML.exe com PyInstaller (não testado no Linux onde foi escrito)

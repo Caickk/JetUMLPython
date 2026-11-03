@@ -48,7 +48,7 @@ py -m unittest discover -s tests -t .             # roda os testes (os de interf
 4. **Fase 4 — Interação** — ✅ concluída, 102 testes: barra lateral, criação de nós/arestas, arraste, laço, seleção, menu de contexto, dicas (RF07–16, 32–35).
 5. **Fase 5 — Propriedades e texto** — ✅ concluída, 119 testes: painel, auto-edição, estereótipos, itálico/sublinhado (RF12, 20, 22–24).
 6. **Fase 6 — Exportação, área de transferência, preferências** — ✅ concluída, 147 testes: RF04, RF05, RF36, RF38, RF39, RF41–42 na UI, copiar/colar (RF34).
-7. **Fase 7 — Endurecimento**: testes de integração, desempenho (RNF01), empacotamento para Windows.
+7. **Fase 7 — Endurecimento** — ✅ concluída, 160 testes: testes de integração, desempenho (RNF01), empacotamento para Windows.
 
 Critério de pronto de cada fase: testes verdes + `REQUISITOS.md` atualizado.
 
@@ -76,3 +76,10 @@ Critério de pronto de cada fase: testes verdes + `REQUISITOS.md` atualizado.
 - RF14: arrastar da nota termina sempre em ponto fixo (`Point`); arrastar do nó termina na nota.
 - RF29/RF30: chamada de construtor termina na linha de vida; só uma caixa raiz órfã por diagrama.
 - Textos de menu e notificações em inglês, como nos rótulos do Anexo II.
+
+## 7. Estado final e verificação
+- **Testes** (`py -m unittest discover -s tests -t .`): lógica (modelo, validação, comandos, layout, interação, exportação, colagem), interface Tk e estresse com gestos aleatórios nos 5 tipos de diagrama (invariantes do modelo, desfazer/refazer exatos, salvar/abrir sem perdas).
+- **Rastreabilidade**: `docs/RASTREABILIDADE.md` (requisito → testes), gerado e conferido por `tools/traceability.py`.
+- **Desempenho**: `tools/benchmark.py` (sem tela) e `tools/benchmark_tk.py` (com tela).
+- **Fora do alcance do ambiente de desenvolvimento**: Windows real, colar imagem em outros programas, `.exe`. Roteiro em `docs/ROTEIRO_VERIFICACAO_WINDOWS.md`.
+- Nenhuma decisão de projeto consultou o código padrão ouro; qualquer comparação com ele é trabalho de análise do grupo.

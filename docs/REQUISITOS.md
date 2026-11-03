@@ -1,7 +1,7 @@
 # JetUML Python — Acompanhamento de requisitos
 
 Legenda: ✅ atendido e testado · 🟡 parcial (lógica pronta e testada, falta interface/renderização) · ⬜ pendente
-Última atualização: **Fase 6 concluída** (147 testes: 107 de lógica + 40 de interface Tk sob Xvfb).
+Última atualização: **Fase 7 concluída** (160 testes: 118 de lógica + 42 de interface Tk sob Xvfb; 324 mil passos aleatórios de estresse sem violar regras).
 
 ## Requisitos funcionais
 | ID | Requisito | Como será atendido | Fase | Status |
@@ -90,3 +90,8 @@ Legenda: ✅ atendido e testado · 🟡 parcial (lógica pronta e testada, falta
 29. **RF40, limitação do sistema**: no Windows a barra de menus *nativa* (File/Edit/View) ignora cores e continua clara. Todo o resto (menus suspensos, abas, barra de ferramentas e ícones, painéis, diálogos e a área de desenho) troca de tema.
 30. **RF34, regras de colagem**: deslocamento de +20 px por colagem; uma aresta só é copiada se estiver selecionada e as duas pontas também forem copiadas (a âncora de um conector de nota acompanha); campo solto, tipos incompatíveis e qualquer colagem em diagrama de sequência são recusados com notificação de erro. Recortar = copiar + excluir.
 31. **Fonte (RF39)**: a tela mede o texto com a fonte real do Tk; as imagens exportadas usam uma estimativa proporcional ao tamanho, então a largura de caixas pode variar levemente entre a tela e o arquivo exportado.
+32. **O teste de estresse achou dois defeitos reais** (Fase 7), ambos corrigidos e com teste de regressão: (a) uma *seleção obsoleta* — mover/anexar com Shift um nó que acabara de ser desfeito derrubava o programa; agora o gesto limpa a seleção ao começar e o editor ignora elementos que não estão mais no diagrama; (b) *apagar a aresta de construtor* deixava a caixa da linha de vida criada sem chamador, gerando uma segunda raiz órfã (viola o RF30); agora apagar uma chamada apaga também o que ela criou.
+33. **Desempenho (RNF01)**: o gargalo era medir texto no Tk a cada redesenho (80% do tempo). Com memória de larguras, o redesenho completo caiu de 48 → 6 ms (50 nós), 145 → 13 ms (150), 375 → 32 ms (400) e 1022 → 76 ms (1000 nós / 1500 arestas). Medido no Linux/Xvfb (CPU de servidor); no seu computador rode `tools/benchmark_tk.py`.
+34. **Zoom no teclado numérico**: além de Ctrl+= / Ctrl+- / Ctrl+0, Ctrl com `+`, `-` e `0` do teclado numérico também funcionam (útil no ABNT2).
+35. **Empacotamento**: `pip install .` foi verificado (instala, abre a janela a partir do pacote instalado). `build_windows.bat` (PyInstaller) **não** foi testado. O que depende do Windows está em `docs/ROTEIRO_VERIFICACAO_WINDOWS.md`.
+36. **Rastreabilidade**: `docs/RASTREABILIDADE.md` liga cada um dos 45 requisitos a testes que existem de fato (101 referências, conferidas por `tools/traceability.py` e por um teste).

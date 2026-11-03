@@ -1,0 +1,25 @@
+Metadata-Version: 2.4
+Name: jetuml-py
+Version: 1.0.0
+Summary: Editor de diagramas UML (Class, Sequence, State, Object, Use Case) em Python/Tkinter
+Requires-Python: >=3.10
+Description-Content-Type: text/markdown
+Provides-Extra: image
+Requires-Dist: Pillow>=10.1; extra == "image"
+
+# JetUML (Python)
+
+Editor de diagramas UML (Class, Sequence, State, Object, Use Case) feito para o trabalho de EXA871.
+
+## Executar
+    py -m jetuml_py                                  # abre o editor (Python 3.10+, Tkinter incluído no instalador do Windows)
+    pip install -r requirements.txt                  # opcional: PNG/JPEG e copiar imagem
+
+## Testes
+    py -m unittest discover -s tests -t .            # os testes de interface exigem display e são ignorados sem ele
+
+Documentação: `docs/PLANO.md` (arquitetura, padrões, formato JSON) e `docs/REQUISITOS.md` (requisitos e status).
+
+## Instalar como programa / gerar .exe
+    pip install .                 # cria o comando `jetuml` (adicione ".[image]" para PNG/JPEG)
+    build_windows.bat             # gera dist\JetUML.exe com PyInstaller (não testado no Linux onde foi escrito)

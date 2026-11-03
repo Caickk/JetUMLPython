@@ -18,9 +18,15 @@ class TkTextMetrics(TextMetrics):
         super().__init__(size)
         self.family = family
         self._font = tkfont.Font(family=family, size=-size)
+        self._cache: dict[str, int] = {}      # medir no Tk é caro (~0,1 ms); o texto raramente muda entre redesenhos
 
     def width(self, line: str) -> int:
-        return self._font.measure(parse_markup(line).text)
+        w = self._cache.get(line)
+        if w is None:
+            if len(self._cache) > 20000:      # limite de memória
+                self._cache.clear()
+            w = self._cache[line] = self._font.measure(parse_markup(line).text)
+        return w
 
 
 class TkRenderer(Renderer):

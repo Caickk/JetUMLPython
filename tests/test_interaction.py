@@ -283,6 +283,25 @@ class DeletionAndSelectAll(unittest.TestCase):
         self.assertEqual(c.diagram.edges, [])
 
 
+class ConstructorDeletion(unittest.TestCase):
+    """Regressão (achada pelo estresse dirigido): apagar a aresta de construtor deixava uma 2ª raiz órfã."""
+
+    def test_deleting_constructor_edge_removes_boxes_of_the_constructed_lifeline(self):
+        c = make_controller(DT.SEQUENCE)
+        l1, l2, l3 = (c.editor.add_node("ImplicitParameter", x, 0) for x in (0, 200, 400))
+        e1 = c.editor.add_call(l1, l2)
+        ctor = c.editor.add_call(e1.end, l3, constructor=True)
+        c.editor.add_call(l3, l1)                                # a linha construída passa a ter uma caixa
+        self.assertEqual(len(sf.orphan_roots(c.diagram)), 1)
+        c.editor.delete(edges=[ctor])
+        self.assertEqual(len(sf.orphan_roots(c.diagram)), 1)     # continua uma única raiz
+        self.assertEqual(l3.children, [])
+        self.assertIn(l3, c.diagram.roots)                       # a linha de vida em si permanece
+        c.editor.undo()
+        self.assertEqual(len(l3.children), 1)
+        self.assertEqual(len(sf.orphan_roots(c.diagram)), 1)
+
+
 class Hit(unittest.TestCase):
     def test_edge_hit_tolerance(self):
         c = make_controller(DT.STATE)
@@ -291,6 +310,32 @@ class Hit(unittest.TestCase):
         apply_layout(c.diagram)
         self.assertIsNotNone(edge_at(c.diagram, Point(200, 31)))
         self.assertIsNone(edge_at(c.diagram, Point(200, 80)))
+
+
+class StaleSelection(unittest.TestCase):
+    """Regressão (achada pelo teste de estresse): seleção com elementos já desfeitos/apagados."""
+
+    def test_shift_drag_after_undo_of_selected_node_does_not_crash(self):
+        c = make_controller(DT.CLASS)
+        pkg = c.editor.add_node("Package", 0, 0)
+        x = c.editor.add_node("Class", 400, 400)
+        click(c, 450, 430)                                   # x selecionado
+        c.editor.undo()                                      # x some (criação desfeita), seleção fica obsoleta
+        c.selection.set([x, pkg])                            # simula repintura ainda não ocorrida
+        drag(c, 30, 30, 90, 70, shift=True)                  # arrasta o pacote com Shift
+        self.assertNotIn(x, list(c.diagram.all_nodes()))
+
+    def test_editor_operations_ignore_elements_no_longer_in_the_diagram(self):
+        c = make_controller(DT.CLASS)
+        pkg = c.editor.add_node("Package", 0, 0)
+        gone = c.editor.add_node("Class", 400, 400)
+        c.editor.undo()
+        self.assertFalse(c.editor.move([gone], 10, 10))
+        self.assertFalse(c.editor.delete(nodes=[gone]))
+        self.assertIsNone(c.editor.attach(gone, pkg))
+        self.assertIsNone(c.editor.detach(gone))
+        self.assertEqual(len(c.editor.notifier.active()), 0)  # sem erro para o usuário
+        self.assertEqual(len(list(c.diagram.all_nodes())), 1)
 
 
 if __name__ == "__main__":

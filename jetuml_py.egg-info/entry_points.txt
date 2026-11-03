@@ -1,0 +1,2 @@
+[gui_scripts]
+jetuml = jetuml_py.ui.app:main
